@@ -2,10 +2,10 @@
 
 namespace Webtamizhan\LangManager;
 
+use Illuminate\Filesystem\Filesystem;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Webtamizhan\LangManager\Commands\FindCommand;
-use Webtamizhan\LangManager\Commands\LangManagerCommand;
 use Webtamizhan\LangManager\Commands\MissingCommand;
 use Webtamizhan\LangManager\Commands\RemoveCommand;
 use Webtamizhan\LangManager\Commands\RenameCommand;
@@ -17,6 +17,14 @@ class LangManagerServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
+        $this->app->bind(Manager::class, function () {
+            return new Manager(
+                new Filesystem(),
+                $this->app['config']['langmanager.path'],
+                array_merge($this->app['config']['view.paths'], [$this->app['path']])
+            );
+        });
+
         /*
          * This class is a Package Service Provider
          *
@@ -24,6 +32,7 @@ class LangManagerServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('lang-manager')
+            ->hasConfigFile('langmanager')
             ->hasCommands([
                 MissingCommand::class,
                 RemoveCommand::class,

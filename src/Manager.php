@@ -40,7 +40,7 @@ class Manager
     public function __construct(Filesystem $disk, $path, array $syncPaths)
     {
         $this->disk = $disk;
-        $this->path = $path;
+        $this->path = empty($path) ? config('langmanager.path') : $path;
         $this->syncPaths = $syncPaths;
     }
 
